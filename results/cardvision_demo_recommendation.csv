@@ -1,0 +1,2 @@
+player_cards,player_total,hand_type,dealer_upcard,recommended_action
+"[5, 7]",12,hard,5,Stand
