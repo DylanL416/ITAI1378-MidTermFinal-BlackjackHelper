@@ -6,9 +6,9 @@
 
 ---
 
-## 📌 Problem Statement
+##  Problem Statement
 
-Blackjack players—especially new ones—often struggle to apply basic strategy consistently under time pressure. Correct play depends on quickly identifying the player hand, the dealer upcard, and whether the hand is hard, soft, or a pair. Traditional strategy charts are useful, but they require manual interpretation and do not automatically read the current board state.
+Blackjack players, especially new ones, often struggle to apply basic strategy consistently under time pressure. Correct play depends on quickly identifying the player hand, the dealer upcard, and whether the hand is hard, soft, or a pair. Traditional strategy charts are useful, but they require manual interpretation and do not automatically read the current board state.
 
 CardVision addresses this problem as an educational practice tool. It is designed for controlled practice settings, not live casino play.
 
