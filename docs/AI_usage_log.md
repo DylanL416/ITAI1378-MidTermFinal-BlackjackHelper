@@ -4,7 +4,7 @@
 
 This document summarizes how AI tools were used during the development of CardVision.
 
-The AI system was used as a support and brainstorming tool. Final decisions, project direction, debugging, and implementation choices were reviewed and managed by the student.
+The AI system was used as a support and brainstorming tool. Final decisions, project direction, debugging, and implementation choices were reviewed and managed by myself.
 
 ---
 
