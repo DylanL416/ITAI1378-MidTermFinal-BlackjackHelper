@@ -1,4 +1,4 @@
-# ♠️ CardVision — Blackjack Practice Coach
+#  CardVision — Blackjack Practice Coach
 
 **ITAI 1378: Computer Vision & AI**  
 **Team:** Dylan Legault  
@@ -14,7 +14,7 @@ CardVision addresses this problem as an educational practice tool. It is designe
 
 ---
 
-## 💡 Solution Overview
+##  Solution Overview
 
 CardVision is a computer vision blackjack practice assistant that detects visible card ranks from a blackjack board image, assigns cards to dealer and player zones, parses the current blackjack state, and recommends a V1 basic strategy action.
 
@@ -34,7 +34,7 @@ CardVision is a computer vision blackjack practice assistant that detects visibl
 
 ---
 
-## ⚙️ Technical Approach
+##  Technical Approach
 
 | Component | Choice | Justification |
 |---|---|---|
@@ -65,7 +65,7 @@ Basic strategy recommendation
 
 ---
 
-## 🗃️ Dataset Plan
+##  Dataset Plan
 
 CardVision V1 uses the Kaggle 52-card PNG deck as raw card assets. The notebook programmatically generates synthetic blackjack-table images by placing one dealer card in the top zone and two player cards in the bottom zone.
 
@@ -85,7 +85,7 @@ A, 2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K
 
 ---
 
-## 📊 Success Metrics
+##  Success Metrics
 
 | Metric | Type | Target |
 |---|---|---|
@@ -96,7 +96,7 @@ A, 2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K
 
 ---
 
-## 📓 Notebook Progress
+##  Notebook Progress
 
 The current notebook draft implements an end-to-end CardVision V1 prototype:
 
@@ -118,7 +118,7 @@ notebooks/CardVisionV1.ipynb
 
 ---
 
-## 📅 Week-by-Week Plan
+##  Week-by-Week Plan
 
 | Week | Task | Milestone |
 |---|---|---|
@@ -131,7 +131,7 @@ notebooks/CardVisionV1.ipynb
 
 ---
 
-## ⚠️ Risks & Mitigation
+##  Risks & Mitigation
 
 | Risk | Probability | Mitigation |
 |---|---|---|
@@ -154,7 +154,7 @@ notebooks/CardVisionV1.ipynb
 
 ---
 
-## 📁 Repository Structure
+##  Repository Structure
 
 ```text
 CardVision/
@@ -174,7 +174,7 @@ CardVision/
 
 ---
 
-## 📦 Requirements
+##  Requirements
 
 Install dependencies with:
 
@@ -200,7 +200,7 @@ kagglehub
 
 ---
 
-## 🚀 Future Work
+##  Future Work
 
 - Test on real photos of physical playing cards
 - Add more table backgrounds, lighting variation, and rotation augmentation
