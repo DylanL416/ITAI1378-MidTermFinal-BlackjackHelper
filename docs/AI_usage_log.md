@@ -75,5 +75,3 @@ AI assistance helped review documentation wording and improve consistency betwee
 Topics discussed:
 - aligning README with the final rank-only design
 - simplifying technical explanations
-- clarifying V1 limitations
-- documenting future work ideas
