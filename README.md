@@ -1,22 +1,36 @@
-# ♠️ CardVision — Blackjack Card Detection & Strategy Advisor
+# ♠️ CardVision — Blackjack Practice Coach
 
-**ITAI 1378: Computer Vision & AI**
-**Team:** Dylan
+**ITAI 1378: Computer Vision & AI**  
+**Team:** Dylan Legault  
 **Tier:** Tier 2
 
 ---
 
 ## 📌 Problem Statement
 
-Blackjack players—especially new ones—routinely make suboptimal decisions due to lack of strategy knowledge. Phones are banned at most tables, printed cheat sheets are frowned upon, and memorizing basic strategy is unreliable under pressure. There is no real-time, discreet tool to guide players at the table.
+Blackjack players—especially new ones—often struggle to apply basic strategy consistently under time pressure. Correct play depends on quickly identifying the player hand, the dealer upcard, and whether the hand is hard, soft, or a pair. Traditional strategy charts are useful, but they require manual interpretation and do not automatically read the current board state.
+
+CardVision addresses this problem as an educational practice tool. It is designed for controlled practice settings, not live casino play.
 
 ---
 
 ## 💡 Solution Overview
 
-CardVision is a real-time computer vision system that detects playing cards on a blackjack table using a camera feed, identifies each card's rank and suit, and instantly recommends the optimal move (Hit, Stand, Double Down, Split, or Surrender) based on standard basic strategy.
+CardVision is a computer vision blackjack practice assistant that detects visible card ranks from a blackjack board image, assigns cards to dealer and player zones, parses the current blackjack state, and recommends a V1 basic strategy action.
 
-The MVP runs as a Python script with a webcam input and visual HUD overlay. The long-term vision is integration with Meta Ray-Ban smart glasses for a wearable, heads-up display experience.
+**V1 supported actions:**
+- Hit
+- Stand
+- Double
+- Split
+
+**V1 intentionally excludes:**
+- Insurance
+- Surrender
+- Card counting
+- Bet sizing
+- Multi-player table tracking
+- Post-split hand tracking
 
 ---
 
@@ -24,32 +38,50 @@ The MVP runs as a Python script with a webcam input and visual HUD overlay. The 
 
 | Component | Choice | Justification |
 |---|---|---|
-| **CV Technique** | Object Detection + Classification | Identify card position, rank, and suit from a live feed |
-| **Model** | YOLOv8n (Ultralytics) | Best-in-class speed/accuracy tradeoff; <30ms inference |
-| **Framework** | PyTorch + Ultralytics | Industry standard; easy fine-tuning on custom data |
-| **Input** | Webcam / RTSP stream | Flexible for dev; maps to Ray-Ban camera long-term |
-| **Output** | OpenCV HUD overlay | Visual recommendation rendered directly on video feed |
+| **CV Technique** | Object Detection | Detect visible card locations and ranks from a board image |
+| **Model** | YOLOv8n (Ultralytics) | Lightweight, fast, and suitable for Colab-based training |
+| **Framework** | PyTorch + Ultralytics | Common computer vision workflow with simple training/inference APIs |
+| **Dataset Source** | Kaggle 52-card PNG deck | Provides clean individual card assets for synthetic training data |
+| **Labels** | 13 rank-only classes | Blackjack decisions depend on rank, not suit |
+| **Output** | Strategy recommendation table + visualization | Shows detected cards, zones, hand type, and recommended action |
 
-**Pipeline:**
-```
-[Camera Frame] → [YOLOv8 Card Detection] → [Rank+Suit Classification] → [Strategy Engine] → [HUD Overlay]
+### Pipeline
+
+```text
+Card PNG assets
+    ↓
+Synthetic blackjack board generation
+    ↓
+YOLOv8 rank-only training
+    ↓
+Card rank detection
+    ↓
+Dealer/player zone assignment
+    ↓
+Blackjack hand parser
+    ↓
+Basic strategy recommendation
 ```
 
 ---
 
 ## 🗃️ Dataset Plan
 
-| Source | Type | Size | Labels |
-|---|---|---|---|
-| [Roboflow Universe](https://universe.roboflow.com) | Public, pre-labeled | ~5,000–15,000 images | 52 classes (rank + suit) |
-| [Kaggle Playing Cards](https://www.kaggle.com/) | Public | ~3,000 images | Rank + suit |
-| Self-collected | Manual photos | ~500 images | Custom — felt table surface |
+CardVision V1 uses the Kaggle 52-card PNG deck as raw card assets. The notebook programmatically generates synthetic blackjack-table images by placing one dealer card in the top zone and two player cards in the bottom zone.
 
-- **Total target:** 10,000+ images after augmentation
-- **Label format:** YOLO `.txt` bounding boxes
-- **Classes:** 52 (13 ranks × 4 suits)
-- **Split:** 80% train / 20% validation, stratified by class
-- **Augmentation:** Rotation ±15°, brightness shifts, blur, horizontal flip
+Although the source dataset includes full rank+suit card images, V1 converts labels into **13 rank-only classes** because blackjack strategy decisions do not depend on suit.
+
+| Source | Type | Labels Used | Purpose |
+|---|---|---|---|
+| Kaggle 52-card deck | Public PNG assets | Converted to rank-only labels | Synthetic YOLO training data |
+| Synthetic board images | Generated in notebook | YOLO bounding boxes + rank class | Model training and validation |
+| Future self-collected images | Real photos | Rank labels | Robustness testing |
+
+### Rank Classes
+
+```text
+A, 2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K
+```
 
 ---
 
@@ -57,24 +89,45 @@ The MVP runs as a Python script with a webcam input and visual HUD overlay. The 
 
 | Metric | Type | Target |
 |---|---|---|
-| Card Detection Accuracy (mAP) | Primary | ≥ 92% |
-| Rank + Suit Classification Accuracy | Primary | ≥ 95% |
-| Strategy Recommendation Accuracy | Primary | 100% (deterministic lookup) |
-| Inference Latency | Secondary | < 100ms per frame |
-| False Positive Rate | Secondary | < 5% |
+| Rank Detection Accuracy / mAP | Primary | ≥ 90% on synthetic validation images |
+| Strategy Recommendation Accuracy | Primary | 100% for deterministic lookup cases |
+| Inference Latency | Secondary | < 1 second per image |
+| Zone Assignment Correctness | Secondary | Dealer/player cards grouped correctly in V1 layout |
+
+---
+
+## 📓 Notebook Progress
+
+The current notebook draft implements an end-to-end CardVision V1 prototype:
+
+- Downloads the Kaggle 52-card PNG dataset
+- Parses card filenames into card labels
+- Converts full card labels into rank-only classes
+- Generates synthetic blackjack board images
+- Trains a YOLOv8n rank detector
+- Runs inference on validation images
+- Assigns detections to dealer/player zones
+- Parses the blackjack hand state
+- Recommends Hit, Stand, Double, or Split
+
+Main notebook:
+
+```text
+notebooks/CardVisionV1.ipynb
+```
 
 ---
 
 ## 📅 Week-by-Week Plan
 
-| Week | Date | Task | Milestone |
-|---|---|---|---|
-| 10 | Oct 30 | Finalize dataset, set up repo & environment | Dataset ready + repo live |
-| 11 | Nov 6 | Train YOLOv8 baseline on Roboflow dataset | Model detects all 52 cards |
-| 12 | Nov 13 | Integrate strategy engine, test on video | End-to-end pipeline working |
-| 13 | Nov 20 | Tune accuracy, add augmentation, UI polish | ≥92% detection accuracy |
-| 14 | Nov 27 | Final testing, README, GitHub cleanup | Submission-ready |
-| 15 | Dec 4 | In-class presentation 🎉 | Live demo |
+| Week | Task | Milestone |
+|---|---|---|
+| 10 | Finalize scope, repo, and proposal | Project plan complete |
+| 11 | Build strategy engine and dataset pipeline | Logic layer working |
+| 12 | Generate synthetic images and train YOLOv8 | Rank detector working |
+| 13 | Integrate detection with strategy engine | End-to-end prototype |
+| 14 | Test, document, and polish repo | Submission-ready materials |
+| 15 | Present project | Final demo |
 
 ---
 
@@ -82,10 +135,11 @@ The MVP runs as a Python script with a webcam input and visual HUD overlay. The 
 
 | Risk | Probability | Mitigation |
 |---|---|---|
-| Low detection accuracy on glare/worn cards | Medium | Add augmentation; switch to YOLOv8s (small) for better accuracy |
-| Insufficient labeled training data | Low | Fall back to Roboflow's public playing card universe (~15K images, fully labeled) |
-| Inference too slow for real-time | Medium | Use YOLOv8 nano; reduce input resolution to 416×416 |
-| Partial card occlusion | Low | Train on synthetically occluded images; fall back to rank-only detection |
+| Synthetic images do not fully match real camera images | Medium | Add real self-collected photos later |
+| Low rank detection accuracy on glare/rotation | Medium | Add augmentation and varied backgrounds |
+| Confusion between similar ranks | Medium | Increase image resolution or train longer |
+| Inference too slow | Low | Use YOLOv8n and reduce image size if needed |
+| Complex table layouts | Medium | Keep V1 to one dealer zone and one player zone |
 
 ---
 
@@ -93,45 +147,69 @@ The MVP runs as a Python script with a webcam input and visual HUD overlay. The 
 
 | Resource | Option |
 |---|---|
-| Compute | Google Colab (T4 GPU), Kaggle Notebooks (P100) |
-| Frameworks | Ultralytics YOLOv8, PyTorch, OpenCV |
-| Datasets | Roboflow Universe, Kaggle (both free) |
-| Estimated Cost | **$0** — all free tiers and open-source tools |
+| Compute | Google Colab with T4 GPU |
+| Frameworks | Ultralytics YOLOv8, PyTorch, Pandas, Matplotlib |
+| Dataset | Kaggle 52-card PNG deck |
+| Estimated Cost | $0 using free tools |
 
 ---
 
 ## 📁 Repository Structure
 
-```
+```text
 CardVision/
-├── README.md                  ← You are here
-├── requirements.txt           ← Python dependencies
+├── README.md
+├── requirements.txt
 ├── notebooks/
-│   └── 01_exploration.ipynb   ← Initial dataset exploration
+│   └── CardVisionV1.ipynb
 ├── data/
-│   └── README.md              ← Dataset sources and download instructions
-└── docs/
-    └── proposal.pdf           ← Presentation slides (PDF)
+│   └── README.md
+├── docs/
+│   └── AI_usage_log.md
+├── results/
+│   └── README.md
+└── assets/
+    └── README.md
 ```
 
 ---
 
 ## 📦 Requirements
 
+Install dependencies with:
+
+```bash
+pip install -r requirements.txt
 ```
-ultralytics>=8.0.0
-torch>=2.0.0
-torchvision>=0.15.0
-opencv-python>=4.8.0
-numpy>=1.24.0
-Pillow>=9.5.0
+
+Core dependencies include:
+
+```text
+ultralytics
+torch
+torchvision
+opencv-python
+numpy
+pandas
+matplotlib
+Pillow
+tqdm
+PyYAML
+kagglehub
 ```
 
 ---
 
 ## 🚀 Future Work
 
-- Integration with **Meta Ray-Ban Smart Glasses API** for wearable HUD
-- Support for multi-deck shoe tracking (card counting assistance)
-- Voice output for hands-free recommendations
-- Mobile app wrapper for casual use
+- Test on real photos of physical playing cards
+- Add more table backgrounds, lighting variation, and rotation augmentation
+- Build a simple webcam demo
+- Improve UI overlay for live practice mode
+- Explore future wearable display integration as a stretch goal
+
+---
+
+## Ethics and Scope Note
+
+CardVision is framed as a learning and practice assistant. It is not intended for cheating, casino use, card counting, or gambling automation. The V1 system demonstrates computer vision, board-state parsing, and deterministic strategy lookup in a controlled educational environment.
