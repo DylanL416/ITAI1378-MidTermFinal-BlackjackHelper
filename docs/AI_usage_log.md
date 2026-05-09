@@ -29,6 +29,7 @@ Topics discussed:
 - README organization
 - project milestone planning
 - formatting technical sections
+- Pushing to github
 
 ---
 
